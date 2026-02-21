@@ -1,22 +1,22 @@
 # @muzikanto/nestjs-mcp
 
-NestJS MCP (Model Context Protocol) module — позволяет создавать "tools" (функции) для LLM или HTTP, с автоматическим обнаружением через декораторы, валидацией через Zod и интеграцией с OpenAI Function Calls.
+NestJS MCP (Model Context Protocol) module — allows you to create “tools” (functions) for LLM or HTTP, with automatic detection via decorators, validation, and integration with OpenAI Function Calls.
 
 ---
 
-## Особенности
+## Features
 
-- Регистрация MCP тулз с помощью декоратора `@McpTool()`  
-- Автоматическое обнаружение всех провайдеров (tools) в модуле  
-- Валидация входных данных через Zod схемы  
-- HTTP endpoint для вызова тулз (`POST /mcp`)  
-- Endpoint для списка всех тулз (`GET /mcp/tools`)  
-- Легкая интеграция с LLM (OpenAI Function Calls)  
-- Полная типизация TypeScript  
+- Register MCP tools using the `@McpTool()` decorator
+- Automatic detection of all providers (tools) in the module
+- Input data validation
+- HTTP endpoint for calling tools (`POST /mcp`)  
+- Endpoint for a list of all tools (`GET /mcp/tools`)  
+- Easy integration with LLM (OpenAI Function Calls)  
+- Full TypeScript typing  
 
 ---
 
-## Установка
+## Installation
 
 ```bash
 yarn add @muzikanto/nestjs-mcp
@@ -24,9 +24,9 @@ yarn add @muzikanto/nestjs-mcp
 
 Peer dependencies: `@nestjs/common, @nestjs/core, reflect-metadata`
 
-## Использование
+## Usage
 
-### Подключение MCP модуля
+### Connecting the MCP module
 
 ```ts
 import { Module } from '@nestjs/common';
@@ -44,7 +44,7 @@ import { PaymentTool } from './tools/payment.tool';
 export class AppModule {}
 ```
 
-### Создание MCP tool
+### Create MCP tool
 
 ```ts
 import { IMcpTool, McpTool } from '../decorators/mcp-tool.decorator';
@@ -63,15 +63,15 @@ export class GetCurrentDate implements IMcpTool<{ country: string; }, { date: st
 }
 ```
 
-### Вызов MCP тулзы через HTTP
+### Calling MCP tools via HTTP
 
 POST /mcp
 
 ```json
 {
-  "type": "paymentTool",
+  "type": "get-date",
   "payload": {
-    "cartId": "abc123"
+    "country": "ru"
   }
 }
 ```
@@ -79,33 +79,29 @@ POST /mcp
 Ответ 
 ```json
 {
-  "success": true,
   "data": {
-    "status": "confirmed",
-    "cartId": "abc123"
+    "date": "21/02/2026, 16:17:00"
   }
 }
 ```
 
-### Получение всех tool
+### Obtaining all tools
 
 GET /mcp/tool
 
 ```json
 [
   {
-    "name": "paymentTool",
+    "name": "get-date",
     "description": "",
     "inputSchema": {
-      "shape": {
-        "cartId": { "type": "string", "description": "The cart ID to confirm" }
-      }
+      "country": { "type": "string", "description": "Страна" },
     }
   }
 ]
 ```
 
-### Интеграция с OpenAI Function Calls
+### Integration with OpenAI Function Calls
 
 ```ts
 import axios from 'axios';
@@ -115,11 +111,11 @@ import { z } from 'zod';
 const MCP_URL = 'http://localhost:3000/mcp';
 const MCP_TOOLS_URL = 'http://localhost:3000/mcp/tools';
 
-// Создаём клиент OpenAI
+// Create OpenAI client
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 /**
- * Получение списка всех зарегистрированных MCP тулз
+ * Get all tools
  */
 async function listMcpTools() {
   const response = await axios.get(MCP_TOOLS_URL);
@@ -127,7 +123,7 @@ async function listMcpTools() {
 }
 
 /**
- * Вызов MCP тулзы через HTTP
+ * Request mcp tool
  */
 async function callMcpTool(toolName: string, payload: Record<string, any>) {
   const response = await axios.post(
@@ -139,13 +135,11 @@ async function callMcpTool(toolName: string, payload: Record<string, any>) {
 }
 
 /**
- * Пример использования с OpenAI
+ * Example
  */
 (async () => {
-  // 1️⃣ Получаем список тулз
   const functions = await listMcpTools();
 
-  // 2️⃣ Отправляем запрос в OpenAI
   const completion = await client.chat.completions.create({
     model: 'gpt-4.1-mini',
     messages: [{ role: 'user', content: 'Confirm cart abc123' }],
@@ -155,7 +149,6 @@ async function callMcpTool(toolName: string, payload: Record<string, any>) {
 
   const message = completion.choices[0].message;
 
-  // 3️⃣ Если OpenAI решил вызвать функцию, вызываем соответствующую MCP тулзу
   if (message.function_call) {
     const { name, arguments: argsJson } = message.function_call;
     const args = JSON.parse(argsJson);
@@ -164,4 +157,4 @@ async function callMcpTool(toolName: string, payload: Record<string, any>) {
     console.log('Result from MCP tool:', result);
   }
 })();
-```# -muzikanto-nestjs-mcp
+```
