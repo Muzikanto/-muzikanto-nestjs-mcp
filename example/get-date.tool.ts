@@ -1,4 +1,4 @@
-import { IMcpTool, McpTool } from '../decorators/mcp-tool.decorator';
+import { IMcpTool, McpTool } from '../src/decorators/mcp-tool.decorator';
 
 @McpTool()
 export class GetCurrentDate implements IMcpTool<{ country: string; }, { date: string }> {
