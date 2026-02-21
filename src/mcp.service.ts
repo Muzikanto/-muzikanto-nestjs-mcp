@@ -27,7 +27,7 @@ export class McpService implements OnModuleInit {
     return Array.from(this.tools.values()).map(t => ({
       name: t.name,
       description: t.description || '',
-      inputSchema: t.inputSchema || {},
+      parameters: t.inputSchema || {},
     }));
   }
 
