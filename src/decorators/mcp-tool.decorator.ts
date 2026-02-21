@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import 'reflect-metadata';
+import { Injectable } from "@nestjs/common";
+import "reflect-metadata";
 
 export interface IMcpTool<Payload = any, Result = any> {
   name: string;
@@ -8,7 +8,7 @@ export interface IMcpTool<Payload = any, Result = any> {
   execute(input: Payload): Promise<Result>;
 }
 
-export const MCP_TOOL_METADATA = 'mcp:tool-class';
+export const MCP_TOOL_METADATA = "mcp:tool-class";
 
 /**
  * Декоратор класса для MCP тулзы

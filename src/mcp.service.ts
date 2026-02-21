@@ -1,6 +1,6 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { IMcpTool } from './decorators/mcp-tool.decorator';
-import Ajv from 'ajv';
+import { Injectable, OnModuleInit } from "@nestjs/common";
+import { IMcpTool } from "./decorators/mcp-tool.decorator";
+import Ajv from "ajv";
 
 export interface McpMessage {
   type: string;
@@ -17,18 +17,18 @@ export interface McpResponse {
 export class McpService implements OnModuleInit {
   private tools = new Map<string, IMcpTool>();
   private ajv = new Ajv();
-  
+
   onModuleInit() {
     // console.log('MCP Service initialized');
   }
 
-   /**
+  /**
    * Возвращает список зарегистрированных тулз
    */
   listTools() {
-    return Array.from(this.tools.values()).map(t => ({
+    return Array.from(this.tools.values()).map((t) => ({
       name: t.name,
-      description: t.description || '',
+      description: t.description || "",
       parameters: t.inputSchema || {},
     }));
   }
@@ -42,7 +42,7 @@ export class McpService implements OnModuleInit {
    */
   async sendMessage(msg: { type: string; payload: any }) {
     const tool = this.tools.get(msg.type);
-  
+
     if (!tool) {
       return { success: false, error: `Unknown tool: ${msg.type}` };
     }
@@ -59,7 +59,7 @@ export class McpService implements OnModuleInit {
 
     try {
       const result = await tool.execute(msg.payload);
-    
+
       return { success: true, data: result };
     } catch (err: any) {
       return { success: false, error: err.message };

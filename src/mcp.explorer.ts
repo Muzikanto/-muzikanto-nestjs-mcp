@@ -1,7 +1,7 @@
-import { DiscoveryService } from '@nestjs/core';
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { McpService } from './mcp.service';
-import { MCP_TOOL_METADATA } from './decorators/mcp-tool.decorator';
+import { DiscoveryService } from "@nestjs/core";
+import { Injectable, OnModuleInit } from "@nestjs/common";
+import { McpService } from "./mcp.service";
+import { MCP_TOOL_METADATA } from "./decorators/mcp-tool.decorator";
 
 @Injectable()
 export class McpExplorer implements OnModuleInit {
@@ -20,7 +20,7 @@ export class McpExplorer implements OnModuleInit {
       if (!metadata) return;
 
       // Проверка интерфейса
-      if (typeof instance.execute !== 'function') {
+      if (typeof instance.execute !== "function") {
         throw new Error(
           `MCP Tool ${metadata.name} must implement IMcpTool with execute() method`,
         );
