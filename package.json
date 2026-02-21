@@ -1,6 +1,6 @@
 {
   "name": "@muzikanto/nestjs-mcp",
-  "version": "1.0.0-canary.5",
+  "version": "1.0.0",
   "description": "Model Context Protocol integration for NestJS",
   "keywords": [
     "nestjs",
@@ -10,10 +10,10 @@
   ],
   "license": "MIT",
   "maintainers": [
-      {
-         "name": "Maxim Schiriy"
-      }
-   ],
+    {
+      "name": "Maxim Schiriy"
+    }
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -26,6 +26,7 @@
   "peerDependencies": {
     "@nestjs/common": "^10 || ^11",
     "@nestjs/core": "^10 || ^11",
+    "@nestjs/swagger": "^10 || ^11",
     "reflect-metadata": "^0.1.13"
   },
   "dependencies": {
@@ -33,11 +34,12 @@
     "ajv": "^8.18.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
     "@nestjs/common": "^10 || ^11",
     "@nestjs/core": "^10 || ^11",
-    "reflect-metadata": "^0.1.13",
+    "@nestjs/swagger": "^10 || ^11",
+    "@types/node": "^20.0.0",
     "prettier": "^3.8.1",
+    "reflect-metadata": "^0.1.13",
     "typescript": "^5.0.0"
   }
 }
