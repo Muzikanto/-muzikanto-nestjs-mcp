@@ -31,14 +31,14 @@ Peer dependencies: `@nestjs/common, @nestjs/core, reflect-metadata`
 ```ts
 import { Module } from '@nestjs/common';
 import { McpModule } from '@muzikanto/nestjs-mcp';
-import { PaymentTool } from './tools/payment.tool';
+import { GetCurrentDateTool } from './tools/payment.tool';
 
 @Module({
   imports: [
     McpModule.forRoot(),
   ],
   providers: [
-    PaymentTool,
+    GetCurrentDateTool,
   ],
 })
 export class AppModule {}
@@ -47,10 +47,10 @@ export class AppModule {}
 ### Create MCP tool
 
 ```ts
-import { IMcpTool, McpTool } from '../decorators/mcp-tool.decorator';
+import { IMcpTool, McpTool } from '@muzikanto/nestjs-mcp';
 
 @McpTool()
-export class GetCurrentDate implements IMcpTool<{ country: string; }, { date: string }> {
+export class GetCurrentDateTool implements IMcpTool<{ country: string; }, { date: string }> {
   name = 'get-date';
 
   inputSchema = {
@@ -110,7 +110,6 @@ GET /mcp/tool
 ```ts
 import axios from 'axios';
 import OpenAI from 'openai';
-import { z } from 'zod';
 
 const MCP_URL = 'http://localhost:3000/mcp';
 const MCP_TOOLS_URL = 'http://localhost:3000/mcp/tools';
