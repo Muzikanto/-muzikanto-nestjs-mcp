@@ -41,12 +41,14 @@ export class McpService implements OnModuleInit {
    */
   async sendMessage(msg: { type: string; payload: any }) {
     const tool = this.tools.get(msg.type);
+  
     if (!tool) {
       return { success: false, error: `Unknown tool: ${msg.type}` };
     }
 
     try {
       const result = await tool.execute(msg.payload);
+    
       return { success: true, data: result };
     } catch (err: any) {
       return { success: false, error: err.message };

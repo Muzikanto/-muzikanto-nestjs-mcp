@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { IMcpTool, McpTool } from '../decorators/mcp-tool.decorator';
 
-@McpTool('example')
+@McpTool()
 @Injectable()
-export class PaymentTool implements IMcpTool {
+export class PaymentTool implements IMcpTool<{ cartId: string; }, { status: string, cartId: string }> {
   name = 'example';
 
-  static inputSchema = {
+  inputSchema = {
     cartId: { type: 'string', description: 'ID корзины' },
   };
 

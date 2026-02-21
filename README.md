@@ -49,12 +49,14 @@ export class AppModule {}
 ```ts
 import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
-import { McpTool } from '@muzikanto/nestjs-mcp';
+import { McpTool, IMcpTool } from '@muzikanto/nestjs-mcp';
 
-@McpTool('paymentTool')
+@McpTool()
 @Injectable()
-export class PaymentTool {
-  static inputSchema = {
+export class PaymentTool implements IMcpTool<{ cartId: string; }, { status: string, cartId: string }> {
+  name = 'paymentTool';
+
+  inputSchema = {
     cartId: { type: 'string', description: 'ID корзины' },
   };
 
