@@ -22,11 +22,11 @@ export class McpExplorer implements OnModuleInit {
       // Проверка интерфейса
       if (typeof instance.execute !== "function") {
         throw new Error(
-          `MCP Tool ${metadata.name} must implement IMcpTool with execute() method`,
+          `MCP Tool ${instance.name} must implement IMcpTool with execute() method`,
         );
       }
 
-      this.mcpService.registerTool(metadata.name, instance);
+      this.mcpService.registerTool(instance.name, instance);
     });
   }
 }

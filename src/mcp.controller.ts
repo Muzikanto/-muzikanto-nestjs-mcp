@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Header, Get } from "@nestjs/common";
 import { McpMessage, McpService } from "./mcp.service";
+import { McpMessageDto } from "./dto/McpMessage.dto";
 
 @Controller("mcp")
 export class McpController {
@@ -7,7 +8,7 @@ export class McpController {
 
   @Post()
   @Header("Content-Type", "application/json")
-  async handle(@Body() body: McpMessage) {
+  async handle(@Body() body: McpMessageDto) {
     return this.service.sendMessage(body);
   }
 

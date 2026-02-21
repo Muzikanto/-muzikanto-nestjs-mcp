@@ -44,7 +44,7 @@ export class McpService implements OnModuleInit {
     const tool = this.tools.get(msg.type);
 
     if (!tool) {
-      return { success: false, error: `Unknown tool: ${msg.type}` };
+      return { success: false, error: `Unknown tool: "${msg.type}"` };
     }
 
     // Валидация через AJV, если есть inputSchema
