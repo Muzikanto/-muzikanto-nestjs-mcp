@@ -32,7 +32,7 @@ NestJS MCP (Model Context Protocol) module — allows you to create “tools” 
 - HTTP endpoint for calling tools (`POST /mcp`)  
 - Endpoint for a list of all tools (`GET /mcp/tools`)  
 - Endpoint for a list of all prompts (`GET /mcp/prompts`)  
-- Endpoint for prompt (`GET /mcp/prompts/:name`)  
+- Endpoint for prompt (`POST /mcp/prompts/:name`)  
 - Easy integration with LLM (OpenAI Function Calls)  
 - Full TypeScript typing  
 
@@ -83,7 +83,7 @@ export class TelegramSendMessageTool implements IMcpTool<
     type: "object",
     properties: {
       chatId: {
-        type: "string",
+        type: "number",
         description: "Telegram chat id"
       },
       text: {
@@ -137,7 +137,7 @@ GET /mcp/tool
     "description": "Sent message via Telegram",
     "inputSchema": {
       "chatId": {
-        "type": "string",
+        "type": "number",
         "description": "Telegram chat ID"
       },
       "text": {
@@ -197,7 +197,7 @@ GET /mcp/prompts
 ]
 ```
 
-### Obtainin prompt
+### Obtain prompt
 
 POST /mcp/prompts/telegram_auto_reply
 
