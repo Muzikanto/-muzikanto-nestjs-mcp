@@ -1,5 +1,11 @@
 # @muzikanto/nestjs-mcp
 
+## 1.1.0
+
+### Minor Changes
+
+- Add prompt decorators and routes
+
 ## 1.0.1
 
 ### Patch Changes

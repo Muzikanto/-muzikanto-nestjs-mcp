@@ -1,9 +1,9 @@
 # @muzikanto/nestjs-mcp
 
-![npm](https://img.shields.io/npm/v/@muzikanto/nestjs-mcp)
-![downloads](https://img.shields.io/npm/dt/@muzikanto/nestjs-mcp)
-![GitHub stars](https://img.shields.io/github/stars/Muzikanto/nestjs-mcp?style=social)
-![License](https://img.shields.io/npm/l/@muzikanto/nestjs-mcp)
+[![npm](https://img.shields.io/npm/v/@muzikanto/nestjs-mcp)](https://www.npmjs.com/package/@muzikanto/nestjs-mcp)
+[![downloads](https://img.shields.io/npm/dt/@muzikanto/nestjs-mcp)]((https://www.npmjs.com/package/@muzikanto/nestjs-mcp))
+[![GitHub stars](https://img.shields.io/github/stars/Muzikanto/nestjs-mcp?style=social)](https://github.com/Muzikanto/nestjs-mcp)
+[![License](https://img.shields.io/npm/l/@muzikanto/nestjs-mcp)](https://github.com/Muzikanto/nestjs-mcp/blob/main/LICENSE)
 
 NestJS MCP (Model Context Protocol) module — allows you to create “tools” (functions) for LLM or HTTP, with automatic detection via decorators, validation, and integration with OpenAI Function Calls.
 
@@ -15,6 +15,7 @@ NestJS MCP (Model Context Protocol) module — allows you to create “tools” 
 - [Usage](#usage)
   - [Connecting the MCP module](#connecting-the-mcp-module)
   - [Create MCP tool](#create-mcp-tool)
+  - [Create MCP prompt](#create-mcp-prompt)
   - [Calling MCP tools via HTTP](#calling-mcp-tools-via-http)
   - [Obtaining all tools](#obtaining-all-tools)
   - [Integration with OpenAI Function Calls](#integration-with-openai-function-calls)
@@ -22,10 +23,13 @@ NestJS MCP (Model Context Protocol) module — allows you to create “tools” 
 ## Features
 
 - Register MCP tools using the `@McpTool()` decorator
+- Register MCP prompts using the `@McpPrompt()` decorator
 - Automatic detection of all providers (tools) in the module
 - Input data validation
 - HTTP endpoint for calling tools (`POST /mcp`)  
 - Endpoint for a list of all tools (`GET /mcp/tools`)  
+- Endpoint for a list of all prompts (`GET /mcp/prompts`)  
+- Endpoint for prompt (`GET /mcp/prompts/:name`)  
 - Easy integration with LLM (OpenAI Function Calls)  
 - Full TypeScript typing  
 
@@ -46,14 +50,14 @@ Peer dependencies: `@nestjs/common, @nestjs/core, reflect-metadata`
 ```ts
 import { Module } from '@nestjs/common';
 import { McpModule } from '@muzikanto/nestjs-mcp';
-import { GetCurrentDateTool } from './tools/payment.tool';
+import { TelegramSendMessageTool } from './tools/telegram-send-message.tool';
+import { TelegramAutoReplyPrompt } from './prompts/telegram-auto-reply.prompt';
 
 @Module({
   imports: [
-    McpModule.forRoot(),
-  ],
-  providers: [
-    GetCurrentDateTool,
+    McpModule.forRoot({
+      providers: [TelegramSendMessageTool, TelegramAutoReplyPrompt],
+    }),
   ],
 })
 export class AppModule {}
@@ -63,21 +67,35 @@ export class AppModule {}
 
 ```ts
 import { IMcpTool, McpTool } from '@muzikanto/nestjs-mcp';
+import { Telegraf } from 'telegraf';
 
 @McpTool()
-export class GetCurrentDateTool implements IMcpTool<{ country: string; }, { date: string }> {
-  name = 'get-date';
+export class TelegramSendMessageTool implements IMcpTool<
+  { chatId: string; text: string },
+  { success: boolean }
+> {
+  name = 'telegram.sendMessage';
 
   inputSchema = {
-    "type": "object",
-    "properties": {
-      "country": { "type": "string", "description": "Country" }
+    type: "object",
+    properties: {
+      chatId: {
+        type: "string",
+        description: "Telegram chat id"
+      },
+      text: {
+        type: "string",
+        description: "Message text"
+      }
     },
-    "required": ["country"]
+    required: ["chatId", "text"]
   };
 
-  async execute(input: { country: string }) {
-    return { date: new Date().toLocaleString() };
+  constructor(private readonly bot: Telegraf) {}
+
+  async execute(input: { chatId: string; text: string }) {
+    await this.bot.telegram.sendMessage(input.chatId, input.text);
+    return { success: true };
   }
 }
 ```
@@ -88,9 +106,10 @@ POST /mcp
 
 ```json
 {
-  "type": "get-date",
+  "type": "telegram.sendMessage",
   "payload": {
-    "country": "ru"
+    "chatId": "...",
+    "text": "Hi, how are you ?"
   }
 }
 ```
@@ -99,7 +118,7 @@ POST /mcp
 ```json
 {
   "data": {
-    "date": "21/02/2026, 16:17:00"
+    "success": true
   }
 }
 ```
@@ -111,13 +130,105 @@ GET /mcp/tool
 ```json
 [
   {
-    "name": "get-date",
-    "description": "",
+    "name": "telegram.sendMessage",
+    "description": "Sent message via Telegram",
     "inputSchema": {
-      "country": { "type": "string", "description": "Страна" },
+      "chatId": {
+        "type": "string",
+        "description": "Telegram chat ID"
+      },
+      "text": {
+        "type": "string",
+        "description": "Message text"
+      }
     }
   }
 ]
+```
+
+### Create MCP prompt
+
+```ts
+import { IMcpPrompt, McpPrompt } from '@muzikanto/nestjs-mcp';
+
+@McpPrompt()
+export class TelegramAutoReplyPrompt implements IMcpPrompt<{ text: string; chatId: number; }> {
+  name = 'telegram_auto_reply';
+  description = 'Generate a short, fiendly reply to an incoming Telegram message and send it back to the same chat using teegram.sendMessage tool';
+
+  async execute({ text, chatId }: { text: string; chatId: number }) {
+    return [
+      {
+        role: "system",
+        content: `You are a friendly Telegram bot. Reply briefly and to the point.`
+      },
+      {
+        role: "user",
+        content: text
+      },
+      {
+        role: "assistant",
+        tool_call: {
+          name: "telegram.sendMessage",
+          arguments: {
+            chatId,
+            text: "{{model_output}}"
+          }
+        }
+      }
+    ];
+  }
+}
+```
+
+### Obtaining all prompts
+
+GET /mcp/prompts
+
+```json
+[
+  {
+    "name": "telegram_auto_reply",
+    "description": "Generate a short, fiendly reply to an incoming Telegram message and send it back to the same chat using teegram.sendMessage tool"
+  }
+]
+```
+
+### Obtainin prompt
+
+POST /mcp/prompts/telegram_auto_reply
+
+```json
+{
+  "text": "Hi. How are you ?",
+  "chatId": 100000000
+}
+```
+
+Response
+```json
+{
+  "messages": [
+      {
+        "role": "system",
+        "content": "You are a friendly Telegram bot. Reply briefly and to the point."
+      },
+      {
+        "role": "user",
+        "content": "Hi. How are you ?"
+      },
+      {
+        "role": "assistant",
+        "tool_call": {
+          "name": "telegram.sendMessage",
+          "arguments": {
+            "chatId": 100000000,
+            "text": "{{model_output}}"
+          }
+        }
+      }
+    ]
+}
 ```
 
 ### Integration with OpenAI Function Calls
@@ -128,6 +239,7 @@ import OpenAI from 'openai';
 
 const MCP_URL = 'http://localhost:3000/mcp';
 const MCP_TOOLS_URL = 'http://localhost:3000/mcp/tools';
+const MCP_TELEGRAM_PROMPT_URL = 'http://localhost:3000/mcp/prompts/telegram_auto_reply';
 
 // Create OpenAI client
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -135,8 +247,16 @@ const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 /**
  * Get all tools
  */
-async function listMcpTools() {
+async function getMcpTools() {
   const response = await axios.get(MCP_TOOLS_URL);
+  return response.data;
+}
+
+/**
+ * Get all prompts
+ */
+async function getMcpPrompt() {
+  const response = await axios.post(MCP_TELEGRAM_PROMPT_URL, {/* propmpt generation arguments */});
   return response.data;
 }
 
@@ -156,12 +276,13 @@ async function callMcpTool(toolName: string, payload: Record<string, any>) {
  * Example
  */
 (async () => {
-  const functions = await listMcpTools();
+  const toolsResponse = await getMcpTools();
+  const promptResponse = await getMcpPrompt();
 
   const completion = await client.chat.completions.create({
     model: 'gpt-4.1-mini',
-    messages: [{ role: 'user', content: 'Confirm cart abc123' }],
-    functions,
+    messages: promptResponse.messages,
+    functions: toolsResponse.tools,
     function_call: 'auto',
   });
 

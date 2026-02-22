@@ -1,6 +1,7 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Injectable, NotFoundException, OnModuleInit } from "@nestjs/common";
 import { IMcpTool } from "./decorators/mcp-tool.decorator";
 import Ajv from "ajv";
+import { IMcpPrompt } from "./decorators/mcp-prompt.decorator";
 
 export interface McpMessage {
   type: string;
@@ -16,6 +17,7 @@ export interface McpResponse {
 @Injectable()
 export class McpService implements OnModuleInit {
   private tools = new Map<string, IMcpTool>();
+  private prompts = new Map<string, IMcpPrompt>();
   private ajv = new Ajv();
 
   onModuleInit() {
@@ -33,8 +35,39 @@ export class McpService implements OnModuleInit {
     }));
   }
 
+  listPrompts() {
+    return Array.from(this.prompts.values()).map((t) => ({
+      name: t.name,
+      description: t.description || "",
+    }));
+  }
+
   registerTool(name: string, handler: IMcpTool) {
     this.tools.set(name, handler);
+  }
+
+  registerPrompt(name: string, handler: IMcpPrompt) {
+    this.prompts.set(name, handler);
+  }
+
+  getPrompt(name: string, payload: object) {
+    if (!this.prompts.has(name)) {
+      throw new NotFoundException('Not found prompt');
+    }
+
+    const prompt = this.prompts.get(name)!;
+
+    // Валидация через AJV, если есть inputSchema
+    if (prompt.inputSchema) {
+      const validate = this.ajv.compile(prompt.inputSchema);
+      const valid = validate(payload);
+
+      if (!valid) {
+        throw new NotFoundException('Invalid prompt arguments');
+      }
+    }
+
+    return prompt.execute(payload);
   }
 
   /**
