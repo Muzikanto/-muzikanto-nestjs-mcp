@@ -18,6 +18,9 @@ NestJS MCP (Model Context Protocol) module — allows you to create “tools” 
   - [Create MCP prompt](#create-mcp-prompt)
   - [Calling MCP tools via HTTP](#calling-mcp-tools-via-http)
   - [Obtaining all tools](#obtaining-all-tools)
+  - [Obtaining all prompts](#obtaining-all-prompts)
+  - [Obtain prompt](#obtain-prompt)
+  - [Auth guard](#auth-guard)
   - [Integration with OpenAI Function Calls](#integration-with-openai-function-calls)
 
 ## Features
@@ -229,6 +232,31 @@ Response
       }
     ]
 }
+```
+
+### Auth guard
+```ts
+import { McpModule } from '@muzikanto/nestjs-mcp';
+import { Module, CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+
+@Injectable()
+export class TestGuard implements CanActivate {
+    canActivate(context: ExecutionContext): Promise<boolean> {
+      const request = context.switchToHttp().getRequest();
+      const authHeader = request.headers['authorization'];
+    
+      return true;
+    }
+}
+
+@Module({
+  imports: [
+    McpModule.forRoot({
+      guard: TestGuard
+    }),
+  ],
+})
+export class AppModule {}
 ```
 
 ### Integration with OpenAI Function Calls

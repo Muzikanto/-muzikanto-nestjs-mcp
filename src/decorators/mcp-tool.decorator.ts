@@ -1,11 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import "reflect-metadata";
 
+export type IMcpToolContext = { request: any };
+
 export interface IMcpTool<Payload = any, Result = any> {
   name: string;
   description?: string;
   inputSchema?: object | object[];
-  execute(input: Payload): Promise<Result>;
+  execute(input: Payload, context: IMcpToolContext): Promise<Result>;
 }
 
 export const MCP_TOOL_METADATA = "mcp:tool-class";

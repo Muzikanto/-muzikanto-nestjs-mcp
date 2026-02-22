@@ -1,9 +1,16 @@
 import { Injectable } from "@nestjs/common";
 import "reflect-metadata";
 
-export type IMcpPromptMessage = { role: string; content?: string; tool_call?: { name: string; arguments: object }; }
+export type IMcpPromptMessage = {
+  role: string;
+  content?: string;
+  tool_call?: { name: string; arguments: object };
+};
 
-export interface IMcpPrompt<Payload = any, Result extends IMcpPromptMessage[] = IMcpPromptMessage[]> {
+export interface IMcpPrompt<
+  Payload = any,
+  Result extends IMcpPromptMessage[] = IMcpPromptMessage[],
+> {
   name: string;
   description?: string;
   inputSchema?: object | object[];

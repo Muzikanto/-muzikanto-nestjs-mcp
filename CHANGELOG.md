@@ -1,5 +1,11 @@
 # @muzikanto/nestjs-mcp
 
+## 1.1.1
+
+### Patch Changes
+
+- add guard authorization check
+
 ## 1.1.0
 
 ### Minor Changes

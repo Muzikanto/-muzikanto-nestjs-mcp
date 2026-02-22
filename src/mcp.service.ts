@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, OnModuleInit } from "@nestjs/common";
-import { IMcpTool } from "./decorators/mcp-tool.decorator";
+import { IMcpTool, IMcpToolContext } from "./decorators/mcp-tool.decorator";
 import Ajv from "ajv";
 import { IMcpPrompt } from "./decorators/mcp-prompt.decorator";
 
@@ -52,7 +52,7 @@ export class McpService implements OnModuleInit {
 
   getPrompt(name: string, payload: object) {
     if (!this.prompts.has(name)) {
-      throw new NotFoundException('Not found prompt');
+      throw new NotFoundException("Not found prompt");
     }
 
     const prompt = this.prompts.get(name)!;
@@ -63,7 +63,7 @@ export class McpService implements OnModuleInit {
       const valid = validate(payload);
 
       if (!valid) {
-        throw new NotFoundException('Invalid prompt arguments');
+        throw new NotFoundException("Invalid prompt arguments");
       }
     }
 
@@ -73,7 +73,10 @@ export class McpService implements OnModuleInit {
   /**
    * Отправить сообщение в MCP "сервер"
    */
-  async sendMessage(msg: { type: string; payload: any }) {
+  async sendMessage(
+    msg: { type: string; payload: any },
+    context: IMcpToolContext,
+  ) {
     const tool = this.tools.get(msg.type);
 
     if (!tool) {
@@ -91,7 +94,7 @@ export class McpService implements OnModuleInit {
     }
 
     try {
-      const result = await tool.execute(msg.payload);
+      const result = await tool.execute(msg.payload, context);
 
       return { success: true, data: result };
     } catch (err: any) {
