@@ -6,6 +6,13 @@ export class McpToolDto {
 
   @ApiProperty({
     type: "string",
+    description: "Tool title",
+    nullable: true,
+  })
+  title?: string;
+
+  @ApiProperty({
+    type: "string",
     description: "Tool description",
     nullable: true,
   })
@@ -17,5 +24,5 @@ export class McpToolDto {
     nullable: true,
     additionalProperties: false,
   })
-  parameters!: any;
+  inputSchema?: any;
 }

@@ -1,6 +1,12 @@
-import { IMcpTool, McpTool } from '../src/decorators/mcp-tool.decorator';
+import { IMcpTool, McpTool } from '@muzikanto/nestjs-mcp';
 // @ts-ignore
 import { Telegraf } from 'telegraf';
+import z from 'zod';
+
+const schema = {
+  chatId: z.string().describe('Telegram chat id'),  // строка с описанием
+  text: z.string().describe('Message text'),  // строка с описанием
+};
 
 @McpTool()
 export class TelegramSendMessageTool implements IMcpTool<
@@ -9,20 +15,7 @@ export class TelegramSendMessageTool implements IMcpTool<
 > {
   name = 'telegram.sendMessage';
 
-  inputSchema = {
-    type: "object",
-    properties: {
-      chatId: {
-        type: "string",
-        description: "Telegram chat id"
-      },
-      text: {
-        type: "string",
-        description: "Message text"
-      }
-    },
-    required: ["chatId", "text"]
-  };
+  inputSchema = schema;
 
   constructor(private readonly bot: Telegraf) {}
 

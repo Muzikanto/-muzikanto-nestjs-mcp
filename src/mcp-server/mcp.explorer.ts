@@ -3,6 +3,7 @@ import { Injectable, OnModuleInit } from "@nestjs/common";
 import { McpService } from "./mcp.service";
 import { MCP_TOOL_METADATA } from "./decorators/mcp-tool.decorator";
 import { MCP_PROMPT_METADATA } from "./decorators/mcp-prompt.decorator";
+import { MCP_RESOURCE_METADATA } from "./decorators/mcp-resource.decorator";
 
 @Injectable()
 export class McpExplorer implements OnModuleInit {
@@ -44,6 +45,22 @@ export class McpExplorer implements OnModuleInit {
       }
 
       this.mcpService.registerPrompt(instance.name, instance);
+    });
+
+    providers.forEach(({ instance, metatype }) => {
+      if (!instance || !metatype) return;
+
+      const metadata = Reflect.getMetadata(MCP_RESOURCE_METADATA, metatype);
+      if (!metadata) return;
+
+      // Проверка интерфейса
+      if (typeof instance.execute !== "function") {
+        throw new Error(
+          `MCP Resource ${instance.name} must implement IMcpResource with execute() method`,
+        );
+      }
+
+      this.mcpService.registerResource(instance.name, instance);
     });
   }
 }

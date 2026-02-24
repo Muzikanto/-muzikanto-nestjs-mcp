@@ -1,8 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import "reflect-metadata";
 
+import type * as z3 from "zod/v3";
+
+type AnySchema = z3.ZodTypeAny;
+type ZodRawShapeCompat = Record<string, AnySchema>;
+
 export type IMcpPromptMessage = {
-  role: string;
+  role: "user" | "assistant" | "system";
   content?: string;
   tool_call?: { name: string; arguments: object };
 };
@@ -12,8 +17,9 @@ export interface IMcpPrompt<
   Result extends IMcpPromptMessage[] = IMcpPromptMessage[],
 > {
   name: string;
+  title?: string;
   description?: string;
-  inputSchema?: object | object[];
+  inputSchema?: ZodRawShapeCompat;
   execute(input: Payload): Promise<Result>;
 }
 

@@ -11,6 +11,8 @@ import {
   CanActivate,
   ForbiddenException,
   Query,
+  Req,
+  Res,
 } from "@nestjs/common";
 import { McpService } from "./mcp.service";
 import { McpMessageDto } from "./dto/McpMessage.dto";
@@ -27,6 +29,7 @@ import { McpPromptsDto } from "./dto/McpPrompts.dto";
 import { McpPromptMessagesDto } from "./dto/McpPromptMessages.dto";
 import { Context } from "./utils/context.decorator";
 import { MCP_GUARD } from "./utils/inject-tokens";
+import { IRequest, IResponse } from "./utils/http";
 
 @Controller("mcp")
 export class McpController {
@@ -35,108 +38,20 @@ export class McpController {
     @Inject(MCP_GUARD) private readonly guard: CanActivate,
   ) {}
 
-  @Get("/")
+  @Get("sse")
   @ApiOperation({
-    summary: "Request mcp info",
+    summary: "Request tool sse",
   })
-  @ApiResponse({
-    status: 200,
-    description: "Mcp info result",
-  })
-  async handleMcp(@Query() query: any) {
-    return {
-      jsonrpc: query.jsonrpc,
-      id: query.id,
-      result: {
-        name: "nestjs-mcp",
-        version: "1.0.0",
-        capabilities: ["http"],
-      },
-    };
+  async handleSse(@Req() req: IRequest, @Res() res: IResponse) {
+    await this.service.handleSse(req, res);
   }
 
-  @Post("/messages")
+  @Post("messages")
   @ApiOperation({
-    summary: "Request mcp protocol",
+    summary: "Handle sse",
   })
-  @ApiResponse({
-    status: 200,
-    description: "Mcp protocol result",
-  })
-  async handleMessages(@Body() body: any, @Request() request: Request, @Context() context: ExecutionContext) {
-    try {
-      await this.checkGuard(context);
-
-      if (body.method === "tools/call") {
-        const result = await this.service.sendMessage(
-          { type: body.params.name, payload: body.params.arguments },
-          { request },
-        );
-
-        return {
-          jsonrpc: body.jsonrpc,
-          id: body.id,
-          result,
-        };
-      }
-      if (body.method === "tools/list") {
-        const tools = await this.service.listTools();
-
-        return {
-          jsonrpc: body.jsonrpc,
-          id: body.id,
-          result: {
-            tools: tools.map((el) => ({
-              name: el.name,
-              description: el.description,
-              inputSchema: el.parameters,
-            })),
-          },
-        };
-      }
-      if (body.method === "prompts/list") {
-        const prompts = await this.service.listPrompts();
-
-        return {
-          jsonrpc: body.jsonrpc,
-          id: body.id,
-          result: {
-            prompts: prompts.map((el) => ({
-              name: el.name,
-              description: el.description,
-            })),
-          },
-        };
-      }
-      if (body.method === "prompts/run") {
-        const messages = await this.service.getPrompt(
-          body.params.name,
-          body.params.arguments,
-        );
-
-        return {
-          jsonrpc: body.jsonrpc,
-          id: body.id,
-          result: {
-            messages,
-          },
-        };
-      }
-    } catch (e) {
-      return {
-        jsonrpc: body.jsonrpc,
-        id: body.id,
-        error: {
-          code: -32000,
-          message: (e as Error).message,
-        },
-      };
-    }
-
-    return {
-      jsonrpc: body.jsonrpc,
-      id: body.id,
-    };
+  async handleSseMessages(@Req() req: IRequest, @Res() res: IResponse) {
+    await this.service.handleSseMessage(req, res);
   }
 
   @Post("/tools")

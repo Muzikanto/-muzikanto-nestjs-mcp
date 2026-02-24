@@ -13,6 +13,8 @@ import { McpController } from "./mcp.controller";
 import { MCP_GUARD } from "./utils/inject-tokens";
 
 type Metadata = Pick<ModuleMetadata, "providers" | "imports" | "exports"> & {
+  // name?: string;
+  // version?: string;
   guard?: Provider<CanActivate>;
 };
 
