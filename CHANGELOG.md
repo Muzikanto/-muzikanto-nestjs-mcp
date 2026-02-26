@@ -1,5 +1,11 @@
 # @muzikanto/nestjs-mcp
 
+## 1.5.1
+
+### Patch Changes
+
+- custom mcp errors for filters
+
 ## 1.5.0
 
 ### Minor Changes
