@@ -1,6 +1,6 @@
 {
   "name": "@muzikanto/nestjs-mcp",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "NestJS MCP (Model Context Protocol) module for creating tools for LLM or HTTP with validation, decorators, and OpenAI Function Calls integration.",
   "keywords": [
     "nestjs",
@@ -20,7 +20,7 @@
     "build": "tsc",
     "prepublishOnly": "npm run build",
     "lint": "prettier --check 'src/**/*.ts'",
-    "format": "prettier --write 'src/**/*.ts' 'example/**/*.ts'",
+    "format": "prettier --write 'src/**/*.ts' 'example/**/*.ts' 'README.md'",
     "ch": "changeset",
     "vers": "changeset version",
     "pub": "changeset publish"

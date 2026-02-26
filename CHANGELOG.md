@@ -1,5 +1,11 @@
 # @muzikanto/nestjs-mcp
 
+## 1.4.0
+
+### Minor Changes
+
+- Dynamic tools, prompts, resources initialization
+
 ## 1.3.0
 
 ### Minor Changes

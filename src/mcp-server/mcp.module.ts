@@ -13,6 +13,7 @@ import { McpController } from "./mcp.controller";
 import { MCP_GUARD } from "./utils/inject-tokens";
 import { IMcpConfig, MCP_CONFIG_TOKEN } from "./config";
 import { DEFAULT_FASTIFY_ADAPTER, IHttpAdapter } from "./utils/http-adapter";
+import { McpDynamicService } from "./mcp-dynamic.service";
 
 type Metadata = Pick<ModuleMetadata, "providers" | "imports" | "exports"> & {
   // name?: string;
@@ -49,12 +50,13 @@ export class McpModule {
       providers: [
         McpService,
         McpExplorer,
+        McpDynamicService,
         configProviver,
         guardProvider,
         ...(metadata.guard ? [metadata.guard] : []),
         ...(metadata.providers || []),
       ],
-      exports: [McpService, ...(metadata.exports || [])],
+      exports: [McpDynamicService, ...(metadata.exports || [])],
       controllers: [McpController],
     };
   }
