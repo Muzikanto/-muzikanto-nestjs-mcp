@@ -46,6 +46,7 @@ NestJS MCP (Model Context Protocol) module — allows you to create “tools”,
 - Easy integration with LLM (OpenAI Function Calls)
 - Support http adapters (default fastify)
 - Full TypeScript typing
+- Support `@UseGuards`, `@UseInterceptors`, `@UseFilters`
 
 ---
 
