@@ -6,7 +6,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { TestGuard } from '../lifecicle/test.guard';
-import z from 'zod/v3';
+import { z } from 'zod/v3';
 import { TestInterceptor } from '../lifecicle/test.interceptor';
 import { TestFilter } from '../lifecicle/test.filter';
 
@@ -21,7 +21,7 @@ const schema = {
 @McpTool()
 export class ExampleTool implements IMcpTool<
   { chatId: string; text: string },
-  { input: any }
+  { success: true }
 > {
   name = 'telegram.sendMessage';
   title = 'Telegram send';
@@ -32,8 +32,8 @@ export class ExampleTool implements IMcpTool<
   async execute(input: {
     chatId: string;
     text: string;
-  }): Promise<{ input: any }> {
+  }): Promise<{ success: true }> {
     // throw new NotImplementedException();
-    return { input };
+    return { success: true };
   }
 }

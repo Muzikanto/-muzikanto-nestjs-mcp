@@ -101,7 +101,7 @@ export class McpSseService implements OnModuleInit {
               { type: tool.name, payload },
               context,
             );
-            const result = await firstValueFrom(observable);
+            const result: object = await firstValueFrom(observable);
 
             return {
               content: [

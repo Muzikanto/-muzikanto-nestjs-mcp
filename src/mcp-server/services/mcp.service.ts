@@ -117,7 +117,7 @@ export class McpService implements OnModuleInit {
         const valid = validate(payload);
 
         if (!valid) {
-          throw new McpBadRequestException("Invalid prompt arguments");
+          throw new McpBadRequestException("Invalid prompt arguments", validate.errors || []);
         }
       }
 
@@ -172,7 +172,8 @@ export class McpService implements OnModuleInit {
 
         if (!valid) {
           throw new McpBadRequestException(
-            this.ajv.errorsText(validate.errors),
+            'Invalid tool arguments',
+            validate.errors || [],
           );
         }
       }

@@ -85,7 +85,7 @@ export class AppModule {}
 ```ts
 import { IMcpTool, McpTool } from "@muzikanto/nestjs-mcp";
 import { Telegraf } from "telegraf";
-import z from "zod";
+import z from "zod/v3";
 
 const schema = {
   chatId: z.number().describe("Telegram chat id"), // строка с описанием
@@ -128,9 +128,7 @@ POST /mcp/tools
 
 ```json
 {
-  "data": {
-    "success": true
-  }
+  "success": true
 }
 ```
 
@@ -167,7 +165,7 @@ GET /mcp/tools
 
 ```ts
 import { IMcpPrompt, McpPrompt } from "@muzikanto/nestjs-mcp";
-import z from "zod";
+import z from "zod/v3";
 
 const schema = {
   chatId: z.number().describe("Telegram chat id"), // строка с описанием

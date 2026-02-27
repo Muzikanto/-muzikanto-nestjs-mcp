@@ -1,6 +1,6 @@
 import { IMcpPrompt, McpPrompt } from '@muzikanto/nestjs-mcp';
 import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
-import z from 'zod/v3';
+import { z } from 'zod/v3';
 import { TestGuard } from '../lifecicle/test.guard';
 import { TestInterceptor } from '../lifecicle/test.interceptor';
 import { TestFilter } from '../lifecicle/test.filter';

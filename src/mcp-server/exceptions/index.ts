@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { ErrorObject } from "ajv";
 
 export class McpException extends HttpException {
   constructor(
@@ -14,8 +15,11 @@ export class McpException extends HttpException {
 }
 
 export class McpBadRequestException extends McpException {
-  constructor(message: string, options?: { cause?: unknown }) {
+  errors?: ErrorObject[];
+  
+  constructor(message: string, errors: ErrorObject[] | undefined, options?: { cause?: unknown }) {
     super(message, HttpStatus.BAD_REQUEST, options);
+    this.errors = errors;
   }
 }
 
