@@ -148,13 +148,13 @@ export class McpController {
     };
   }
 
-  @Get("resources")
+  @Get("resources/templates")
   @ApiOperation({
-    summary: "Get resources list",
+    summary: "Get resources templates list",
   })
   @ApiResponse({
     status: 200,
-    description: "resources list",
+    description: "Resources templates list",
     type: McpResourcesDto,
   })
   @ApiForbiddenResponse({
@@ -169,9 +169,9 @@ export class McpController {
     return { resources };
   }
 
-  @Post("resources/:name")
+  @Post("resources/templates/:name")
   @ApiOperation({
-    summary: "Get resource result",
+    summary: "Get resource template result",
   })
   @ApiBody({
     description: "Any body structure",
@@ -179,14 +179,11 @@ export class McpController {
   })
   @ApiResponse({
     status: 200,
-    description: "Resource result",
+    description: "Resource template result",
     type: McpResourceItemsDto,
   })
   @ApiNotFoundResponse({
-    description: "Not found resource",
-  })
-  @ApiBadRequestResponse({
-    description: "Invalid resource arguments",
+    description: "Not found resource template",
   })
   @ApiForbiddenResponse({
     description: "No access to method",
