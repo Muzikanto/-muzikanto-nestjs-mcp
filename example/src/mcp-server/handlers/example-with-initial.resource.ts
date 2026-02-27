@@ -1,4 +1,4 @@
-import { IMcpResource, McpResource } from '@muzikanto/nestjs-mcp';
+import { IMcpResource, IMcpResourceResult, McpResource } from '@muzikanto/nestjs-mcp';
 import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
 import { TestGuard } from '../lifecicle/test.guard';
 import { TestInterceptor } from '../lifecicle/test.interceptor';
@@ -15,7 +15,7 @@ export class ExampleWithInitialResource implements IMcpResource<{
   uri = 'users://list';
   title = 'Find all user';
 
-  async execute(url: URL) {
+  async execute(url: URL): Promise<IMcpResourceResult[]> {
     return [{ uri: url.href, text: 'Hello for all' }];
   }
 

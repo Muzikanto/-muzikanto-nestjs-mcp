@@ -10,9 +10,13 @@ import { z } from 'zod/v3';
 import { TestInterceptor } from '../lifecicle/test.interceptor';
 import { TestFilter } from '../lifecicle/test.filter';
 
-const schema = {
+const inputSchema = {
   chatId: z.string().describe('Telegram chat id'), // строка с описанием
   text: z.string().describe('Message text'), // строка с описанием
+};
+
+const outputSchema = {
+  success: z.boolean().describe('Success'),
 };
 
 @UseFilters(TestFilter)
@@ -26,7 +30,8 @@ export class ExampleTool implements IMcpTool<
   name = 'telegram.sendMessage';
   title = 'Telegram send';
   description = 'Telegram can sand messages via telegraf';
-  inputSchema = schema;
+  inputSchema = inputSchema;
+  outputSchema = outputSchema;
 
   async execute(input: {
     chatId: string;

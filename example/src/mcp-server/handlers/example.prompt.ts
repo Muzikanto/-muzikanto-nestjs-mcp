@@ -1,4 +1,4 @@
-import { IMcpPrompt, McpPrompt } from '@muzikanto/nestjs-mcp';
+import { IMcpPrompt, IMcpPromptResult, McpPrompt } from '@muzikanto/nestjs-mcp';
 import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
 import { z } from 'zod/v3';
 import { TestGuard } from '../lifecicle/test.guard';
@@ -25,8 +25,9 @@ export class ExamplePrompt implements IMcpPrompt<{
 
   inputSchema = schema;
 
-  async execute({ text, chatId }: { text: string; chatId: number }) {
+  async execute({ text, chatId }: { text: string; chatId: number }): Promise<IMcpPromptResult> {
     return {
+      description: 'Some description',
       messages: [
         {
           role: 'system' as const,
