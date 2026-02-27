@@ -101,13 +101,9 @@ export class McpSseService implements OnModuleInit {
               { type: tool.name, payload },
               context,
             );
-            const result: object = await firstValueFrom(observable);
+            const result = await firstValueFrom(observable);
 
-            return {
-              content: [
-                { text: JSON.stringify(result), type: "text" as const },
-              ],
-            };
+            return { content: result.messages };
           } catch (e) {
             throw new McpInternalServerErrorException(
               `Faild to execute tool ${tool.name}`,

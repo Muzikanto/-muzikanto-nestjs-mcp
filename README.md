@@ -98,14 +98,16 @@ export class TelegramSendMessageTool implements IMcpTool<
   { success: boolean }
 > {
   name = "telegram.sendMessage";
-
   inputSchema = schema;
 
   constructor(private readonly bot: Telegraf) {}
 
   async execute(input: { chatId: string; text: string }) {
     await this.bot.telegram.sendMessage(input.chatId, input.text);
-    return { success: true };
+    return {
+      data: { success: true },
+      messages: [{ type: "text", text: "Success sent to user" }],
+    };
   }
 }
 ```
@@ -128,7 +130,10 @@ POST /mcp/tools
 
 ```json
 {
-  "success": true
+  "data": {
+    "success": true
+  },
+  "messages": [{ "type": "text", "text": "Success sent to user" }]"
 }
 ```
 
@@ -347,7 +352,11 @@ export class McpDynamic {
     this.mcpDynamicService.registerTool({
       name: "dynamic_tool",
       title: "Dynamic tool",
-      execute: () => Promise.resolve("test"),
+      execute: () =>
+        Promise.resolve({
+          data: "test",
+          messages: [{ type: "text" as const, text: "test" }],
+        }),
       guards: [ExampleGuard],
       interceptors: [ExampleInterceptor],
     });
@@ -408,7 +417,7 @@ export class TelegramSendMessageTool implements IMcpTool<
 
   async execute() {
     // await this.bot.telegram.sendMessage(input.chatId, input.text);
-    return { success: true };
+    return { data: { success: true }, messages: { type: 'text', text: 'Success sent' }};
   }
 }
 ```
@@ -476,7 +485,7 @@ export class TelegramSendMessageTool implements IMcpTool<
 
   async execute() {
     // await this.bot.telegram.sendMessage(input.chatId, input.text);
-    return { success: true };
+    return { success: true, messagse: [{ type: 'text', text: 'Success sent' }] };
   }
 }
 ```
@@ -557,11 +566,12 @@ export class TelegramSendMessageTool implements IMcpTool<
 ### Integration with OpenAI Function Calls
 
 ```ts
-import axios from 'axios';
-import OpenAI from 'openai';
+import axios from "axios";
+import OpenAI from "openai";
 
-const MCP_TOOLS_URL = 'http://localhost:3000/mcp/tools';
-const MCP_TELEGRAM_PROMPT_URL = 'http://localhost:3000/mcp/prompts/telegram_auto_reply';
+const MCP_TOOLS_URL = "http://localhost:3000/mcp/tools";
+const MCP_TELEGRAM_PROMPT_URL =
+  "http://localhost:3000/mcp/prompts/telegram_auto_reply";
 
 // Create OpenAI client
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -571,7 +581,7 @@ const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
  */
 async function getMcpTools() {
   const response = await axios.get(MCP_TOOLS_URL);
-  return response.data.tools.map(el => ({
+  return response.data.tools.map((el) => ({
     name: el.name,
     description: el.description,
     parameters: el.inputSchema,
@@ -582,17 +592,17 @@ async function getMcpTools() {
  * Get all prompts
  */
 async function getMcpPrompt() {
-  const response = await axios.post(MCP_TELEGRAM_PROMPT_URL, {/* prompt generation arguments */});
+  const response = await axios.post(MCP_TELEGRAM_PROMPT_URL, {
+    /* prompt generation arguments */
+  });
   return response.data;
+}
 
 /**
  * Request mcp tool
  */
 async function callMcpTool(toolName: string, payload: Record<string, any>) {
-  const response = await axios.post(
-    MCP_TOOLS_URL,
-    { type: toolName, payload },
-  );
+  const response = await axios.post(MCP_TOOLS_URL, { type: toolName, payload });
   return response.data;
 }
 
@@ -604,10 +614,10 @@ async function callMcpTool(toolName: string, payload: Record<string, any>) {
   const promptResponse = await getMcpPrompt();
 
   const completion = await client.chat.completions.create({
-    model: 'gpt-4.1-mini',
+    model: "gpt-4.1-mini",
     messages: promptResponse.messages,
     functions: toolsResponse.tools,
-    function_call: 'auto',
+    function_call: "auto",
   });
 
   const message = completion.choices[0].message;
@@ -616,8 +626,8 @@ async function callMcpTool(toolName: string, payload: Record<string, any>) {
     const { name, arguments: argsJson } = message.function_call;
     const args = JSON.parse(argsJson);
 
-    const result = await callMcpTool(name, args);
-    console.log('Result from MCP tool:', result);
+    const { messages, data } = await callMcpTool(name, args);
+    console.log("Result from MCP tool:", messages, data);
   }
 })();
 ```

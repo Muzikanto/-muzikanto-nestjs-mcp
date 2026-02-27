@@ -16,8 +16,12 @@ export class McpException extends HttpException {
 
 export class McpBadRequestException extends McpException {
   errors?: ErrorObject[];
-  
-  constructor(message: string, errors: ErrorObject[] | undefined, options?: { cause?: unknown }) {
+
+  constructor(
+    message: string,
+    errors: ErrorObject[] | undefined,
+    options?: { cause?: unknown },
+  ) {
     super(message, HttpStatus.BAD_REQUEST, options);
     this.errors = errors;
   }

@@ -1,4 +1,4 @@
-import { IMcpTool, McpTool } from '@muzikanto/nestjs-mcp';
+import { IMcpTool, IMcpToolResult, McpTool } from '@muzikanto/nestjs-mcp';
 import {
   NotImplementedException,
   UseFilters,
@@ -26,14 +26,16 @@ export class ExampleTool implements IMcpTool<
   name = 'telegram.sendMessage';
   title = 'Telegram send';
   description = 'Telegram can sand messages via telegraf';
-
   inputSchema = schema;
 
   async execute(input: {
     chatId: string;
     text: string;
-  }): Promise<{ success: true }> {
+  }): Promise<IMcpToolResult<{ success: true }>> {
     // throw new NotImplementedException();
-    return { success: true };
+    return {
+      data: { success: true },
+      messages: [{ type: 'text', text: `Success sent to user ${input.chatId}` }],
+    };
   }
 }

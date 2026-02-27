@@ -7,6 +7,11 @@ import type * as z3 from "zod/v3";
 type AnySchema = z3.ZodTypeAny;
 type ZodRawShapeCompat = Record<string, AnySchema>;
 
+export type IMcpToolResult<Result> = {
+  data?: Result;
+  messages: Array<{ type: "text"; text: string }>;
+};
+
 export interface IMcpTool<Payload = any, Result = any> {
   name: string;
   title?: string;
@@ -15,7 +20,7 @@ export interface IMcpTool<Payload = any, Result = any> {
   outputSchema?: ZodRawShapeCompat;
   annotations?: ToolAnnotations;
   _meta?: Record<string, unknown>;
-  execute(input: Payload): Promise<Result>;
+  execute(input: Payload): Promise<IMcpToolResult<Result>>;
 }
 
 export const MCP_TOOL_METADATA = "mcp:tool-class";

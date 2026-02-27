@@ -25,4 +25,12 @@ export class McpToolDto {
     additionalProperties: false,
   })
   inputSchema?: any;
+
+  @ApiProperty({
+    type: "object",
+    description: "Tool result schema",
+    nullable: true,
+    additionalProperties: false,
+  })
+  outputSchema?: any;
 }

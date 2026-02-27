@@ -36,6 +36,7 @@ import { McpResourcesDto } from "../dto/McpResources.dto";
 import { McpResourceItemsDto } from "../dto/McpResourceItems.dto";
 import { McpResourceRequestDto } from "../dto/McpResourceRequest.dto";
 import { extractResourceParams } from "../utils/uri";
+import { McpToolResultDto } from "../dto/McpToolResult.dto";
 
 @Controller("mcp")
 export class McpController {
@@ -51,6 +52,7 @@ export class McpController {
     summary: "Request tool",
   })
   @ApiResponse({
+    type: McpToolResultDto,
     status: 200,
     description: "Tool execution result",
   })
@@ -64,7 +66,7 @@ export class McpController {
     @Body() body: McpMessageDto,
     @Request() request: any,
     @Context() context: ExecutionContext,
-  ) {
+  ): Promise<McpToolResultDto> {
     await this.checkGuard(context);
 
     const observable = await this.service.executeTool(body, context);

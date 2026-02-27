@@ -11,7 +11,11 @@ export class DynamicService {
     this.mcpDynamicService.registerTool({
       name: 'dynamic_tool',
       title: 'Dynamic tool',
-      execute: () => Promise.resolve('test'),
+      execute: () =>
+        Promise.resolve({
+          data: 'test',
+          messages: [{ type: 'text' as const, text: 'test' }],
+        }),
       guards: [TestGuard],
       interceptors: [TestInterceptor],
     });

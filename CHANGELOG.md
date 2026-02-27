@@ -1,5 +1,11 @@
 # @muzikanto/nestjs-mcp
 
+## 1.7.0
+
+### Minor Changes
+
+- fix tool result format
+
 ## 1.6.0
 
 ### Minor Changes

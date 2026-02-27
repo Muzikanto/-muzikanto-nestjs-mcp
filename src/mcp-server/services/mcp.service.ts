@@ -1,13 +1,19 @@
 import { ExecutionContext, Injectable, OnModuleInit } from "@nestjs/common";
-import { IMcpTool } from "../decorators/mcp-tool.decorator";
+import { IMcpTool, IMcpToolResult } from "../decorators/mcp-tool.decorator";
 import Ajv from "ajv";
-import { IMcpPrompt } from "../decorators/mcp-prompt.decorator";
+import {
+  IMcpPrompt,
+  IMcpPromptMessage,
+} from "../decorators/mcp-prompt.decorator";
 import { zodToJsonSchema } from "../utils/zod";
-import { IMcpResource } from "../decorators/mcp-resource.decorator";
+import {
+  IMcpResource,
+  IMcpResourceResult,
+} from "../decorators/mcp-resource.decorator";
 import { runGuards } from "../utils/run-guards";
 import { ModuleRef } from "@nestjs/core";
 import { runInterceptors } from "../utils/run-interceptors";
-import { catchError, from, of, throwError } from "rxjs";
+import { catchError, from, Observable, of, throwError } from "rxjs";
 import { runFilters } from "../utils/run-fillters";
 import { McpBadRequestException, McpNotFoundException } from "../exceptions";
 import { IMcpConfig, InjectMcpConfig } from "../config";
@@ -54,6 +60,7 @@ export class McpService implements OnModuleInit {
       title: t.title,
       description: t.description,
       inputSchema: t.inputSchema ? zodToJsonSchema(t.inputSchema) : undefined,
+      outputSchema: t.outputSchema ? zodToJsonSchema(t.outputSchema) : undefined,
     }));
   }
 
@@ -100,7 +107,7 @@ export class McpService implements OnModuleInit {
     name: string,
     payload: object,
     context: ExecutionContext,
-  ) {
+  ): Promise<Observable<IMcpPromptMessage[]>> {
     if (!this.prompts.has(name)) {
       throw new McpNotFoundException("Not found prompt");
     }
@@ -117,7 +124,10 @@ export class McpService implements OnModuleInit {
         const valid = validate(payload);
 
         if (!valid) {
-          throw new McpBadRequestException("Invalid prompt arguments", validate.errors || []);
+          throw new McpBadRequestException(
+            "Invalid prompt arguments",
+            validate.errors || [],
+          );
         }
       }
 
@@ -154,7 +164,7 @@ export class McpService implements OnModuleInit {
   async executeTool(
     msg: { type: string; payload: any },
     context: ExecutionContext,
-  ) {
+  ): Promise<Observable<IMcpToolResult<object>>> {
     if (!this.tools.has(msg.type)) {
       throw new McpNotFoundException("Not found tool");
     }
@@ -172,7 +182,7 @@ export class McpService implements OnModuleInit {
 
         if (!valid) {
           throw new McpBadRequestException(
-            'Invalid tool arguments',
+            "Invalid tool arguments",
             validate.errors || [],
           );
         }
@@ -210,7 +220,7 @@ export class McpService implements OnModuleInit {
     uri: URL,
     vars: Record<string, any>,
     context: ExecutionContext,
-  ) {
+  ): Promise<Observable<IMcpResourceResult[]>> {
     if (!this.resources.has(name)) {
       throw new McpNotFoundException("Not found prompt");
     }
