@@ -14,7 +14,9 @@ export class ExampleResource implements IMcpResource<{ userId: string }> {
   title = 'Get test user';
   description = 'Get user by id';
 
-  async execute(url: URL, input: { userId: string }): Promise<IMcpResourceResult[]> {
-    return [{ uri: url.href, text: `Hello ${input.userId}` }];
+  async execute(url: URL, input: { userId: string }): Promise<IMcpResourceResult> {
+    return {
+      contents: [{ uri: url.href, text: `Hello ${input.userId}` }]
+    };
   }
 }

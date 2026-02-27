@@ -15,8 +15,8 @@ export class ExampleWithInitialResource implements IMcpResource<{
   uri = 'users://list';
   title = 'Find all user';
 
-  async execute(url: URL): Promise<IMcpResourceResult[]> {
-    return [{ uri: url.href, text: 'Hello for all' }];
+  async execute(url: URL): Promise<IMcpResourceResult> {
+    return { contents: [{ uri: url.href, text: 'Hello for all' }] };
   }
 
   async list() {

@@ -31,7 +31,7 @@ export interface IMcpResource<Payload = any> {
   description?: string;
   annotations?: Resource["annotations"];
   _meta?: Resource["_meta"];
-  execute(url: URL, input: Payload): Promise<IMcpResourceResult[]>;
+  execute(url: URL, input: Payload): Promise<IMcpResourceResult>;
   list?(
     extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
   ): Promise<IMcpResourceListItem[]>;

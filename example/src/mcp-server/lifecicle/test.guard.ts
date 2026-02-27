@@ -12,6 +12,6 @@ export class TestGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<FastifyRequest>();
     this.logger.log('TestGuard called', request.url);
 
-    return true;
+    return false;
   }
 }

@@ -34,7 +34,7 @@ export class DynamicService {
       title: 'Dynamic resource',
       uri: 'dynamic://test/{testId}',
       execute: (uri, input) =>
-        Promise.resolve([{ uri: uri.href, text: `ID: ${input.testId}` }]),
+        Promise.resolve({ contents: [{ uri: uri.href, text: `ID: ${input.testId}` }] }),
       guards: [TestGuard],
       interceptors: [TestInterceptor],
       list: async () => {

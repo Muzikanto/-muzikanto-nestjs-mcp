@@ -542,7 +542,7 @@ class NotImplExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     return {
       isError: true,
-      text: (exception as Error).message,
+      messages: [{ type: 'text', text: 'Not implemented tool' }],
     };
   }
 }
@@ -552,7 +552,7 @@ class AuthExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     return {
       isError: true,
-      messages: [{ type: 'text', text: (exception as Error).message || 'Internal server error' }],
+      messages: [{ type: 'text', text: 'No access' }],
     };
   }
 }
