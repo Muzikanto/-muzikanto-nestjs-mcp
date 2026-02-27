@@ -40,6 +40,9 @@ export class McpDynamicService {
       description = tool.description;
       execute = tool.execute;
       inputSchema = tool.inputSchema;
+      outputSchema = tool.outputSchema;
+      annotations = tool.annotations;
+      _meta = tool._meta;
     };
 
     if (tool.guards) {
@@ -91,6 +94,8 @@ export class McpDynamicService {
       description = resource.description;
       execute = resource.execute;
       list = resource.list;
+      annotations = resource.annotations;
+      _meta = resource._meta;
     };
     if (resource.guards) {
       this.applyGuards(DynamicResourceClass, resource.guards);

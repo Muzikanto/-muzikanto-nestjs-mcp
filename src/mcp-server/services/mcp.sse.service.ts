@@ -88,6 +88,9 @@ export class McpSseService implements OnModuleInit {
           title: tool.title,
           description: tool.description,
           inputSchema: tool.inputSchema,
+          outputSchema: tool.outputSchema,
+          annotations: tool.annotations,
+          _meta: tool._meta,
         },
         async (payload: any) => {
           try {
@@ -183,6 +186,8 @@ export class McpSseService implements OnModuleInit {
         {
           title: resource.title,
           description: resource.description,
+          annotations: resource.annotations,
+          _meta: resource._meta,
         },
         async (url: URL, variables: any) => {
           try {

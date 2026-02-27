@@ -370,6 +370,11 @@ export class McpDynamic {
         Promise.resolve([{ uri: uri.href, text: `ID: ${input.testId}` }]),
       guards: [ExampleGuard],
       interceptors: [ExampleInterceptor],
+      list: async () => {
+        return [
+          { uri: "dynamic://test/1", name: "dynamice_1", title: "Dynamic 1" },
+        ];
+      },
     });
   }
 }

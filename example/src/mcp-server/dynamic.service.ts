@@ -33,8 +33,10 @@ export class DynamicService {
       guards: [TestGuard],
       interceptors: [TestInterceptor],
       list: async () => {
-        return [{ uri: 'dynamic://test/1', name: 'dynamice_1', title: 'Dynamic 1' }];
-      }
+        return [
+          { uri: 'dynamic://test/1', name: 'dynamice_1', title: 'Dynamic 1' },
+        ];
+      },
     });
   }
 }

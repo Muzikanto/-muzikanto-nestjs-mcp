@@ -1,3 +1,4 @@
+import { ToolAnnotations } from "@modelcontextprotocol/sdk/types";
 import { Injectable } from "@nestjs/common";
 import "reflect-metadata";
 
@@ -11,6 +12,9 @@ export interface IMcpTool<Payload = any, Result = any> {
   title?: string;
   description?: string;
   inputSchema?: ZodRawShapeCompat;
+  outputSchema?: ZodRawShapeCompat;
+  annotations?: ToolAnnotations;
+  _meta?: Record<string, unknown>;
   execute(input: Payload): Promise<Result>;
 }
 

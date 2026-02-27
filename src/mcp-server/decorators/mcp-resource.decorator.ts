@@ -1,7 +1,9 @@
 import { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol";
 import {
+  Resource,
   ServerNotification,
   ServerRequest,
+  ToolAnnotations,
 } from "@modelcontextprotocol/sdk/types";
 import { Injectable } from "@nestjs/common";
 import "reflect-metadata";
@@ -23,6 +25,8 @@ export interface IMcpResource<Payload = any> {
   uri: string;
   title?: string;
   description?: string;
+  annotations?: Resource["annotations"];
+  _meta?: Resource["_meta"];
   execute(url: URL, input: Payload): Promise<IMcpResourceResult[]>;
   list?(
     extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
