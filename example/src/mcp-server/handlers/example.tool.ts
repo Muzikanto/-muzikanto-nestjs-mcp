@@ -11,7 +11,7 @@ import { TestInterceptor } from '../lifecicle/test.interceptor';
 import { TestFilter } from '../lifecicle/test.filter';
 
 const inputSchema = {
-  chatId: z.string().describe('Telegram chat id'), // строка с описанием
+  chatId: z.number().describe('Telegram chat id'), // строка с описанием
   text: z.string().describe('Message text'), // строка с описанием
 };
 
@@ -43,7 +43,7 @@ export class ExampleTool implements IMcpTool<
       messages: [
         {
           type: 'text',
-          text: `Success sent "${input.text}" to user ${input.chatId}`,
+          text: `Success sent "${input.text}" to user ${input.chatId}. Ожидайте ответ`,
         },
       ],
     };

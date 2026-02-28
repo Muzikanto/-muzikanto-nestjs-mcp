@@ -5,8 +5,11 @@ import {
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
-import { ChatCompletion, ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources';
-
+import {
+  ChatCompletion,
+  ChatCompletionMessageParam,
+  ChatCompletionTool,
+} from 'openai/resources';
 
 @Injectable()
 export class OpenAiService {
@@ -34,15 +37,17 @@ export class OpenAiService {
       {
         role: 'user',
         content: prompt,
-      }
-    ])
+      },
+    ]);
 
     const completion2 = await this.handleTool(completion);
 
     return completion2.choices[0].message;
   }
 
-  private async handleTool(completion: ChatCompletion): Promise<ChatCompletion> {
+  private async handleTool(
+    completion: ChatCompletion,
+  ): Promise<ChatCompletion> {
     const first = completion.choices[0];
 
     if (
@@ -60,15 +65,17 @@ export class OpenAiService {
       return this.handleMessage([
         {
           role: 'user',
-          content: toolResult.messages
-        }
+          content: toolResult.messages,
+        },
       ]);
     }
 
     return completion;
   }
 
-  private async handleMessage(messages: ChatCompletionMessageParam[]): Promise<ChatCompletion> {
+  private async handleMessage(
+    messages: ChatCompletionMessageParam[],
+  ): Promise<ChatCompletion> {
     const completion = await this.client.chat.completions.create({
       model: 'arcee-ai/trinity-large-preview:free',
       messages,

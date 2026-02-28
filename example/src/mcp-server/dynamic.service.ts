@@ -14,7 +14,12 @@ export class DynamicService {
       execute: () =>
         Promise.resolve({
           data: 'test',
-          messages: [{ type: 'text' as const, text: 'test' }],
+          messages: [
+            {
+              type: 'text' as const,
+              text: "It's 30 degrees Celsius outside now",
+            },
+          ],
         }),
       guards: [TestGuard],
       interceptors: [TestInterceptor],

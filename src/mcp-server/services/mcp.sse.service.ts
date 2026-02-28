@@ -77,8 +77,23 @@ export class McpSseService implements OnModuleInit {
       {
         version: this.config.version || "1",
         name: this.config.name || "MCP server",
+        description: this.config.description,
+        title: this.config.title,
+        icons: this.config.icons,
       },
-      {},
+      {
+        capabilities: {
+          prompts: {
+            listChanged: true,
+          },
+          tools: {
+            listChanged: true,
+          },
+          resources: {
+            listChanged: true,
+          },
+        },
+      },
     );
 
     this.registerTools(server, context);

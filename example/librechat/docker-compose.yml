@@ -1,0 +1,46 @@
+services:
+  mongo:
+    image: mongo:7.0.5
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    env_file:
+      - ./.env
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - ai-network
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh \"mongodb://$${MONGO_INITDB_ROOT_USERNAME}:$${MONGO_INITDB_ROOT_PASSWORD}@localhost:27017/admin\" --quiet --eval \"db.adminCommand('ping').ok\" | grep 1 >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  librechat:
+    image: ghcr.io/danny-avila/librechat:latest
+    restart: unless-stopped
+    ports:
+      - "3080:3080"
+    env_file:
+      - ./.env
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      MONGO_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/?authSource=admin
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      ALLOW_REGISTRATION: "true"
+    volumes:
+      - ./librechat.yaml:/app/librechat.yaml
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+  
