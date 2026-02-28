@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { FastifyRequest } from 'fastify';
 
@@ -12,6 +17,6 @@ export class TestGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<FastifyRequest>();
     this.logger.log('TestGuard called', request.url);
 
-    return false;
+    return true;
   }
 }

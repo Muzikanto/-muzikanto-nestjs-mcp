@@ -13,6 +13,23 @@
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./client": {
+      "import": "./dist/mcp-client/index.js",
+      "require": "./dist/mcp-client/index.js",
+      "types": "./dist/mcp-client/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/mcp-server/index.js",
+      "require": "./dist/mcp-server/index.js",
+      "types": "./dist/mcp-server/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],

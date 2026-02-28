@@ -1,4 +1,4 @@
-import { Module, Provider, Type } from "@nestjs/common";
+import { DynamicModule, Module, Provider, Type } from "@nestjs/common";
 import { McpClientService } from "./mcp-client.service";
 import { MCP_CLIENT_CONFIG } from "../mcp-server/utils/inject-tokens";
 import { HttpModule } from "@nestjs/axios";
@@ -13,7 +13,7 @@ export class McpClientModule {
     useValue?: IMcpClientConfig;
     useExisting?: Type<IMcpClientConfig>;
     useFactory?: (...args: any) => IMcpClientConfig | Promise<IMcpClientConfig>;
-  }) {
+  }): DynamicModule {
     const configProvider: Provider<IMcpClientConfig> = {
       provide: MCP_CLIENT_CONFIG,
       ...(metadata.useValue
@@ -25,15 +25,17 @@ export class McpClientModule {
 
     return {
       module: McpClientModule,
-      implements: [
+      imports: [
         HttpModule.registerAsync({
-          inject: [MCP_CLIENT_CONFIG],
           useFactory: (config: IMcpClientConfig) => {
-            return { baseUrl: config.url };
+            return { baseURL: config.url };
           },
+          inject: [MCP_CLIENT_CONFIG],
+          extraProviders: [configProvider],
         }),
       ],
       providers: [McpClientService, configProvider],
+      exports: [McpClientService],
     };
   }
 }

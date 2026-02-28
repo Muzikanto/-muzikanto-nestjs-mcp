@@ -41,7 +41,10 @@ export class ExampleTool implements IMcpTool<
     return {
       structuredContent: { success: true },
       messages: [
-        { type: 'text', text: `Success sent to user ${input.chatId}` },
+        {
+          type: 'text',
+          text: `Success sent "${input.text}" to user ${input.chatId}`,
+        },
       ],
     };
   }

@@ -23,6 +23,7 @@ import {
   ApiNotFoundResponse,
   ApiOperation,
   ApiResponse,
+  ApiTags,
 } from "@nestjs/swagger";
 import { McpToolsDto } from "../dto/McpTools.dto";
 import { McpPromptsDto } from "../dto/McpPrompts.dto";
@@ -38,6 +39,7 @@ import { McpResourceRequestDto } from "../dto/McpResourceRequest.dto";
 import { extractResourceParams } from "../utils/uri";
 import { McpToolResultDto } from "../dto/McpToolResult.dto";
 
+@ApiTags("MCP server")
 @Controller("mcp")
 export class McpController {
   constructor(

@@ -26,6 +26,7 @@
     "@muzikanto/nestjs-mcp": "^1.6.0",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-fastify": "9.4.3",
     "@nestjs/swagger": "^10 || ^11",

@@ -24,7 +24,13 @@ export class ExamplePrompt implements IMcpPrompt<{
     'Generate a short, fiendly reply to an incoming Telegram message and send it back to the same chat using teegram.sendMessage tool';
   inputSchema = schema;
 
-  async execute({ text, chatId }: { text: string; chatId: number }): Promise<IMcpPromptResult> {
+  async execute({
+    text,
+    chatId,
+  }: {
+    text: string;
+    chatId: number;
+  }): Promise<IMcpPromptResult> {
     return {
       description: 'Some description',
       messages: [

@@ -22,6 +22,7 @@ import {
   ApiNotFoundResponse,
   ApiOperation,
   ApiResponse,
+  ApiTags,
 } from "@nestjs/swagger";
 import { Context } from "../utils/context.decorator";
 import { MCP_GUARD } from "../utils/inject-tokens";
@@ -29,6 +30,7 @@ import { IMcpConfig, InjectMcpConfig } from "../config";
 import { firstValueFrom } from "rxjs";
 import { McpSseService } from "../services/mcp.sse.service";
 
+@ApiTags("MCP server")
 @Controller("mcp")
 export class McpSseController {
   constructor(

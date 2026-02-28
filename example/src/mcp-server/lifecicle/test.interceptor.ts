@@ -17,7 +17,7 @@ export class TestInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data: unknown) => {
         this.logger.log('After execute');
-        this.logger.log(data)
+        this.logger.log(data);
 
         return data;
       }),

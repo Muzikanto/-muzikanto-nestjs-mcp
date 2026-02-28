@@ -542,7 +542,7 @@ class NotImplExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     return {
       isError: true,
-      messages: [{ type: 'text', text: 'Not implemented tool' }],
+      messages: [{ type: "text", text: "Not implemented tool" }],
     };
   }
 }
@@ -552,7 +552,7 @@ class AuthExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     return {
       isError: true,
-      messages: [{ type: 'text', text: 'No access' }],
+      messages: [{ type: "text", text: "No access" }],
     };
   }
 }
@@ -574,6 +574,8 @@ export class TelegramSendMessageTool implements IMcpTool<
 
 ### Integration with OpenAI Function Calls
 
+Example with `openai`: `6.25.0`
+
 ```ts
 import axios from "axios";
 import OpenAI from "openai";
@@ -583,17 +585,24 @@ const MCP_TELEGRAM_PROMPT_URL =
   "http://localhost:3000/mcp/prompts/telegram_auto_reply";
 
 // Create OpenAI client
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const client = new OpenAI({
+  baseUrl: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY,
+});
 
 /**
  * Get all tools
  */
 async function getMcpTools() {
   const response = await axios.get(MCP_TOOLS_URL);
+
   return response.data.tools.map((el) => ({
-    name: el.name,
-    description: el.description,
-    parameters: el.inputSchema,
+    type: "function",
+    function: {
+      name: el.name,
+      description: el.description,
+      parameters: el.inputSchema,
+    },
   }));
 }
 
@@ -623,16 +632,16 @@ async function callMcpTool(toolName: string, payload: Record<string, any>) {
   const promptResponse = await getMcpPrompt();
 
   const completion = await client.chat.completions.create({
-    model: "gpt-4.1-mini",
+    model: "arcee-ai/trinity-large-preview:free",
     messages: promptResponse.messages,
-    functions: toolsResponse.tools,
-    function_call: "auto",
+    tools: toolsResponse,
+    tool_choice: "auto",
   });
 
   const message = completion.choices[0].message;
 
-  if (message.function_call) {
-    const { name, arguments: argsJson } = message.function_call;
+  if (message.tool_calls?.length) {
+    const { name, arguments: argsJson } = message.tool_calls[0].function;
     const args = JSON.parse(argsJson);
 
     const { messages, structuredContent } = await callMcpTool(name, args);

@@ -9,8 +9,8 @@ export class DynamicService {
 
   onModuleInit() {
     this.mcpDynamicService.registerTool({
-      name: 'dynamic_tool',
-      title: 'Dynamic tool',
+      name: 'get_temperature',
+      title: 'Get temperature',
       execute: () =>
         Promise.resolve({
           data: 'test',
@@ -34,7 +34,9 @@ export class DynamicService {
       title: 'Dynamic resource',
       uri: 'dynamic://test/{testId}',
       execute: (uri, input) =>
-        Promise.resolve({ contents: [{ uri: uri.href, text: `ID: ${input.testId}` }] }),
+        Promise.resolve({
+          contents: [{ uri: uri.href, text: `ID: ${input.testId}` }],
+        }),
       guards: [TestGuard],
       interceptors: [TestInterceptor],
       list: async () => {

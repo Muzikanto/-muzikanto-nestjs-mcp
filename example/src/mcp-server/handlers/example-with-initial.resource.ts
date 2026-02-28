@@ -1,4 +1,8 @@
-import { IMcpResource, IMcpResourceResult, McpResource } from '@muzikanto/nestjs-mcp';
+import {
+  IMcpResource,
+  IMcpResourceResult,
+  McpResource,
+} from '@muzikanto/nestjs-mcp';
 import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
 import { TestGuard } from '../lifecicle/test.guard';
 import { TestInterceptor } from '../lifecicle/test.interceptor';
