@@ -1,9 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { McpToolResultMessageDto } from "./McpToolResultMessage.dto";
 
-export class McpToolResultDto {
+export class McpToolResultDto<Result = any> {
   @ApiProperty({ description: "Tool result", nullable: true })
-  structuredContent?: any;
+  structuredContent?: Result;
 
   @ApiProperty({ type: McpToolResultMessageDto, isArray: true })
   messages!: McpToolResultMessageDto[];

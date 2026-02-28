@@ -5,13 +5,13 @@ import {
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
-import { ChatCompletionTool } from 'openai/resources';
+import { ChatCompletion, ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources';
 
-let cachedTools: ChatCompletionTool[];
 
 @Injectable()
 export class OpenAiService {
   private readonly client: OpenAI;
+  private tools: ChatCompletionTool[] = [];
 
   constructor(
     protected readonly configService: ConfigService,
@@ -24,24 +24,25 @@ export class OpenAiService {
   }
 
   async chat(prompt: string) {
-    if (!cachedTools) {
-      cachedTools = await this.mcpClient
+    if (!this.tools.length) {
+      this.tools = await this.mcpClient
         .getAllTools()
         .then((res) => McpOpenAiHelper.convertTools(res.tools));
     }
 
-    const completion = await this.client.chat.completions.create({
-      model: 'arcee-ai/trinity-large-preview:free',
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-      tool_choice: 'auto',
-      tools: cachedTools,
-    });
+    const completion = await this.handleMessage([
+      {
+        role: 'user',
+        content: prompt,
+      }
+    ])
 
+    const completion2 = await this.handleTool(completion);
+
+    return completion2.choices[0].message;
+  }
+
+  private async handleTool(completion: ChatCompletion): Promise<ChatCompletion> {
     const first = completion.choices[0];
 
     if (
@@ -49,16 +50,32 @@ export class OpenAiService {
       first.message.tool_calls?.length
     ) {
       const toolCall = McpOpenAiHelper.convertToolCall(
-        first.message.tool_calls[0],
+        first.message.tool_calls[0] as any,
       );
       const toolResult = await this.mcpClient.callMcpTool(
         toolCall.name,
         toolCall.payload,
       );
 
-      return toolResult;
+      return this.handleMessage([
+        {
+          role: 'user',
+          content: toolResult.messages
+        }
+      ]);
     }
 
-    return first.message;
+    return completion;
+  }
+
+  private async handleMessage(messages: ChatCompletionMessageParam[]): Promise<ChatCompletion> {
+    const completion = await this.client.chat.completions.create({
+      model: 'arcee-ai/trinity-large-preview:free',
+      messages,
+      tool_choice: 'auto',
+      tools: this.tools,
+    });
+
+    return completion;
   }
 }

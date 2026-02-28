@@ -3,6 +3,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { McpToolsDto } from "../mcp-server/dto/McpTools.dto";
 import { McpPromptsDto } from "../mcp-server/dto/McpPrompts.dto";
 import { McpPromptResultDto } from "../mcp-server/dto/McpPrompResult.dto";
+import { McpToolResultDto } from "../mcp-server/dto/McpToolResult.dto";
 
 @Injectable()
 export class McpClientService {
@@ -35,7 +36,7 @@ export class McpClientService {
   async callMcpTool<Payload = any, Result = any>(
     toolName: string,
     payload: Payload,
-  ): Promise<Result> {
+  ): Promise<McpToolResultDto<Result>> {
     const response = await this.httpService
       .post(
         "/mcp/tools",
