@@ -81,6 +81,10 @@ import { TelegramAutoReplyPrompt } from "./prompts/telegram-auto-reply.prompt";
   imports: [
     McpModule.forRoot({
       providers: [TelegramSendMessageTool, TelegramAutoReplyPrompt],
+      transports: {
+        sse: true, // SSE endpoints for mcp
+        http: true, // HTTP endpoints for custom server
+      },
     }),
   ],
 })

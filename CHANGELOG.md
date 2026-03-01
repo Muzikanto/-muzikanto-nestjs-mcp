@@ -1,5 +1,17 @@
 # @muzikanto/nestjs-mcp
 
+## 1.7.3
+
+### Patch Changes
+
+- fix dynamic tools filters
+
+## 1.7.2
+
+### Patch Changes
+
+- add transports selection
+
 ## 1.7.1
 
 ### Patch Changes

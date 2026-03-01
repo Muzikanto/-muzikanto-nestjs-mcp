@@ -8,7 +8,9 @@ import {
 import { TestGuard } from '../lifecicle/test.guard';
 import { z } from 'zod/v3';
 import { TestInterceptor } from '../lifecicle/test.interceptor';
-import { TestFilter } from '../lifecicle/test.filter';
+import { BadRequestFilter, AuthFilter } from '../lifecicle/test.filter';
+import { Telegraf } from 'telegraf';
+import { InjectBot } from 'nestjs-telegraf';
 
 const inputSchema = {
   chatId: z.number().describe('Telegram chat id'), // строка с описанием
@@ -19,12 +21,12 @@ const outputSchema = {
   success: z.boolean().describe('Success'),
 };
 
-@UseFilters(TestFilter)
+@UseFilters(AuthFilter, BadRequestFilter)
 @UseInterceptors(TestInterceptor)
 @UseGuards(TestGuard)
 @McpTool()
 export class ExampleTool implements IMcpTool<
-  { chatId: string; text: string },
+  { chatId: number; text: string },
   { success: true }
 > {
   name = 'telegram.sendMessage';
@@ -33,17 +35,20 @@ export class ExampleTool implements IMcpTool<
   inputSchema = inputSchema;
   outputSchema = outputSchema;
 
+  constructor(@InjectBot() protected readonly bot: Telegraf) {}
+
   async execute(input: {
-    chatId: string;
+    chatId: number;
     text: string;
   }): Promise<IMcpToolResult<{ success: true }>> {
-    // throw new NotImplementedException();
+    await this.bot.telegram.sendMessage(input.chatId, input.text);
+
     return {
       structuredContent: { success: true },
       messages: [
         {
           type: 'text',
-          text: `Success sent "${input.text}" to user ${input.chatId}. Ожидайте ответ`,
+          text: `Success sent message to user ${input.chatId}. Please wait`,
         },
       ],
     };

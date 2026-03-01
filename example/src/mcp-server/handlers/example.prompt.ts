@@ -3,16 +3,16 @@ import { UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
 import { z } from 'zod/v3';
 import { TestGuard } from '../lifecicle/test.guard';
 import { TestInterceptor } from '../lifecicle/test.interceptor';
-import { TestFilter } from '../lifecicle/test.filter';
+import { BadRequestFilter, AuthFilter } from '../lifecicle/test.filter';
 
 const schema = {
-  chatId: z.string().describe('Telegram chat id'), // строка с описанием
+  chatId: z.number().describe('Telegram chat id'), // строка с описанием
   text: z.string().describe('Message text'), // строка с описанием
 };
 
 @UseGuards(TestGuard)
 @UseInterceptors(TestInterceptor)
-@UseFilters(TestFilter)
+@UseFilters(AuthFilter, BadRequestFilter)
 @McpPrompt()
 export class ExamplePrompt implements IMcpPrompt<{
   text: string;
@@ -36,21 +36,11 @@ export class ExamplePrompt implements IMcpPrompt<{
       messages: [
         {
           role: 'system' as const,
-          content: `You are a friendly Telegram bot. Reply briefly and to the point.`,
+          content: `You are a friendly Telegram bot. Reply briefly and to the point. Use telegram.sendMessage tool.`,
         },
         {
           role: 'user' as const,
-          content: text,
-        },
-        {
-          role: 'assistant' as const,
-          tool_call: {
-            name: 'telegram.sendMessage',
-            arguments: {
-              chatId,
-              text: '{{model_output}}',
-            },
-          },
+          content: `Please send to chatId: ${chatId} answer for: "${text}".`,
         },
       ],
     };

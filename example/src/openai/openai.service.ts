@@ -10,6 +10,7 @@ import {
   ChatCompletionMessageParam,
   ChatCompletionTool,
 } from 'openai/resources';
+import { SYSTEM_INSTRUCTION } from './instructions';
 
 @Injectable()
 export class OpenAiService {
@@ -26,20 +27,14 @@ export class OpenAiService {
     });
   }
 
-  async chat(prompt: string) {
+  async execute(messages: ChatCompletionMessageParam[]) {
     if (!this.tools.length) {
       this.tools = await this.mcpClient
         .getAllTools()
         .then((res) => McpOpenAiHelper.convertTools(res.tools));
     }
 
-    const completion = await this.handleMessage([
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ]);
-
+    const completion = await this.handleMessage(messages);
     const completion2 = await this.handleTool(completion);
 
     return completion2.choices[0].message;
@@ -63,6 +58,7 @@ export class OpenAiService {
       );
 
       return this.handleMessage([
+        ...completion.choices.map((el) => el.message),
         {
           role: 'user',
           content: toolResult.messages,
@@ -78,7 +74,7 @@ export class OpenAiService {
   ): Promise<ChatCompletion> {
     const completion = await this.client.chat.completions.create({
       model: 'arcee-ai/trinity-large-preview:free',
-      messages,
+      messages: [{ role: 'system', content: SYSTEM_INSTRUCTION }, ...messages],
       tool_choice: 'auto',
       tools: this.tools,
     });

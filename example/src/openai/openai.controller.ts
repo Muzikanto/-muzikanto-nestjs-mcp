@@ -16,7 +16,12 @@ export class OpenAiController {
 
   @Post('chat')
   async chat(@Body() body: BodyDto) {
-    const response = await this.openAiService.chat(body.text);
+    const response = await this.openAiService.execute([
+      {
+        role: 'user',
+        content: body.text,
+      },
+    ]);
 
     return response;
   }

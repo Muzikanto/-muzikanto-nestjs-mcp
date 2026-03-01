@@ -18,13 +18,24 @@ import { McpDynamicService } from "./services/mcp-dynamic.service";
 import { McpSseService } from "./services/mcp.sse.service";
 
 type Metadata = Pick<ModuleMetadata, "providers" | "imports" | "exports"> & {
-  // name?: string;
-  // version?: string;
-  guard?: Provider<CanActivate>;
   // config
   name?: string;
+  description?: string;
+  title?: string;
+  icons?: {
+    src: string;
+  }[];
   version?: string;
+  /**
+   * @default { sse: true, http: true }
+   */
+  transports?: {
+    sse?: boolean;
+    http?: boolean;
+  };
+  // utils
   httpAdapter?: IHttpAdapter;
+  guard?: Provider<CanActivate>;
 };
 
 const publicGuard: CanActivate = { canActivate: () => Promise.resolve(true) };
@@ -33,11 +44,16 @@ const publicGuard: CanActivate = { canActivate: () => Promise.resolve(true) };
 @Module({})
 export class McpModule {
   public static forRoot(metadata: Metadata = {}): DynamicModule {
+    // TODO remove defaut in next major version
+    const transports = metadata.transports || { sse: true, http: true };
     const configProviver: Provider<IMcpConfig> = {
       provide: MCP_CONFIG_TOKEN,
       useValue: {
         name: metadata.name,
         version: metadata.version,
+        description: metadata.description,
+        title: metadata.title,
+        icons: metadata.icons,
         httpAdapter: metadata.httpAdapter || DEFAULT_FASTIFY_ADAPTER,
       },
     };
@@ -53,7 +69,7 @@ export class McpModule {
       imports: [DiscoveryModule, ...(metadata.imports || [])],
       providers: [
         McpService,
-        McpSseService,
+        ...(transports.sse ? [McpSseService] : []),
         McpExplorer,
         McpDynamicService,
         configProviver,
@@ -62,7 +78,10 @@ export class McpModule {
         ...(metadata.providers || []),
       ],
       exports: [McpDynamicService, ...(metadata.exports || [])],
-      controllers: [McpController, McpSseController],
+      controllers: [
+        ...(transports.http ? [McpController] : []),
+        ...(transports.sse ? [McpSseController] : []),
+      ],
     };
   }
 }

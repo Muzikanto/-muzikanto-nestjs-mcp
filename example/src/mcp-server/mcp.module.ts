@@ -9,6 +9,10 @@ import { DynamicService } from './dynamic.service';
 @Module({
   imports: [
     McpModule.forRoot({
+      transports: {
+        sse: true,
+        http: true,
+      },
       providers: [
         ExampleWithInitialResource,
         ExampleTool,

@@ -1,4 +1,10 @@
-import { CanActivate, Injectable, NestInterceptor, Type } from "@nestjs/common";
+import {
+  CanActivate,
+  ExceptionFilter,
+  Injectable,
+  NestInterceptor,
+  Type,
+} from "@nestjs/common";
 import { ModuleRef } from "@nestjs/core";
 
 import { McpService } from "../services/mcp.service";
@@ -6,6 +12,7 @@ import { IMcpTool } from "../decorators/mcp-tool.decorator";
 import { IMcpResource } from "../decorators/mcp-resource.decorator";
 import { IMcpPrompt } from "../decorators/mcp-prompt.decorator";
 import {
+  EXCEPTION_FILTERS_METADATA,
   GUARDS_METADATA,
   INTERCEPTORS_METADATA,
 } from "@nestjs/common/constants";
@@ -16,16 +23,19 @@ export type IMcpDynamicTool<
 > = IMcpTool<Input, Result> & {
   guards?: Type<CanActivate>[];
   interceptors?: Type<NestInterceptor>[];
+  filters?: Type<ExceptionFilter>[];
 };
 
 export type IMcpDynamicPrompt<Input> = IMcpPrompt<Input> & {
   guards?: Type<CanActivate>[];
   interceptors?: Type<NestInterceptor>[];
+  filters?: Type<ExceptionFilter>[];
 };
 
 export type IMcpDynamicResource<Input> = IMcpResource<Input> & {
   guards?: Type<CanActivate>[];
   interceptors?: Type<NestInterceptor>[];
+  filters?: Type<ExceptionFilter>[];
 };
 
 @Injectable()
@@ -56,6 +66,9 @@ export class McpDynamicService {
     if (tool.interceptors) {
       this.applyInterceptors(DynamicToolClass, tool.interceptors);
     }
+    if (tool.filters) {
+      this.applyFilters(DynamicToolClass, tool.filters);
+    }
 
     const instance = await this.moduleRef.create(DynamicToolClass);
 
@@ -80,6 +93,9 @@ export class McpDynamicService {
     }
     if (prompt.interceptors) {
       this.applyInterceptors(DynamicPromptClass, prompt.interceptors);
+    }
+    if (prompt.filters) {
+      this.applyFilters(DynamicPromptClass, prompt.filters);
     }
 
     const instance = await this.moduleRef.create(DynamicPromptClass);
@@ -108,6 +124,9 @@ export class McpDynamicService {
     if (resource.interceptors) {
       this.applyInterceptors(DynamicResourceClass, resource.interceptors);
     }
+    if (resource.filters) {
+      this.applyFilters(DynamicResourceClass, resource.filters);
+    }
 
     const instance = await this.moduleRef.create(DynamicResourceClass);
 
@@ -126,5 +145,9 @@ export class McpDynamicService {
     interceptors: Type<NestInterceptor>[],
   ) {
     Reflect.defineMetadata(INTERCEPTORS_METADATA, interceptors, item);
+  }
+
+  protected applyFilters(item: Function, filters: Type<ExceptionFilter>[]) {
+    Reflect.defineMetadata(EXCEPTION_FILTERS_METADATA, filters, item);
   }
 }

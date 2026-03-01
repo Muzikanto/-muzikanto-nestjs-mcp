@@ -2,6 +2,8 @@ import { McpDynamicService } from '@muzikanto/nestjs-mcp';
 import { Injectable } from '@nestjs/common';
 import { TestGuard } from './lifecicle/test.guard';
 import { TestInterceptor } from './lifecicle/test.interceptor';
+import z from 'zod/v3';
+import { AuthFilter, BadRequestFilter } from './lifecicle/test.filter';
 
 @Injectable()
 export class DynamicService {
@@ -23,15 +25,28 @@ export class DynamicService {
         }),
       guards: [TestGuard],
       interceptors: [TestInterceptor],
+      filters: [AuthFilter, BadRequestFilter],
     });
 
     this.mcpDynamicService.registerPrompt({
       name: 'dynamic_prompt',
       title: 'Dynamic prompt',
-      execute: () =>
-        Promise.resolve({ messages: [{ role: 'assistant', content: 'test' }] }),
+      inputSchema: {
+        chatId: z.number().describe('chat Id'),
+      },
+      execute: (input: { chatId: number }) =>
+        Promise.resolve({
+          messages: [
+            {
+              role: 'system',
+              content: `Use telegram.sendMessage tool chatId: ${input.chatId}`,
+            },
+            { role: 'user', content: `Please send to me: Hello world.` },
+          ],
+        }),
       guards: [TestGuard],
       interceptors: [TestInterceptor],
+      filters: [AuthFilter, BadRequestFilter],
     });
 
     this.mcpDynamicService.registerResource<{ testId: string }>({
