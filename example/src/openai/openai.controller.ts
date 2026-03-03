@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { OpenAiService } from './openai.service';
+import { TestOpenAiService } from './openai.service';
 import { ApiProperty } from '@nestjs/swagger';
 
 class BodyDto {
@@ -12,7 +12,7 @@ class BodyDto {
 
 @Controller('openai')
 export class OpenAiController {
-  constructor(private readonly openAiService: OpenAiService) {}
+  constructor(private readonly openAiService: TestOpenAiService) {}
 
   @Post('chat')
   async chat(@Body() body: BodyDto) {

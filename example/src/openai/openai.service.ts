@@ -2,7 +2,7 @@ import {
   McpClientService,
   McpOpenAiHelper,
 } from '@muzikanto/nestjs-mcp/client';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import {
@@ -11,20 +11,18 @@ import {
   ChatCompletionTool,
 } from 'openai/resources';
 import { SYSTEM_INSTRUCTION } from './instructions';
+import { InjectOpenAI } from '@muzikanto/nestjs-openai';
 
 @Injectable()
-export class OpenAiService {
-  private readonly client: OpenAI;
+export class TestOpenAiService {
   private tools: ChatCompletionTool[] = [];
 
   constructor(
+    @InjectOpenAI() protected readonly client: OpenAI,
     protected readonly configService: ConfigService,
     protected readonly mcpClient: McpClientService,
   ) {
-    this.client = new OpenAI({
-      baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: configService.get('OPENAI_API_KEY'),
-    });
+    //
   }
 
   async execute(messages: ChatCompletionMessageParam[]) {

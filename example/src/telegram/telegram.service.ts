@@ -1,7 +1,7 @@
 import { Update, Ctx, InjectBot, On } from 'nestjs-telegraf';
 import { Telegraf, Context } from 'telegraf';
 import { McpClientService } from '@muzikanto/nestjs-mcp';
-import { OpenAiService } from 'src/openai/openai.service';
+import { TestOpenAiService } from 'src/openai/openai.service';
 import { McpPromptResultDto } from 'node_modules/@muzikanto/nestjs-mcp/dist/mcp-server/dto/McpPrompResult.dto';
 
 @Update()
@@ -11,7 +11,7 @@ export class TelegramService {
   constructor(
     @InjectBot() protected readonly bot: Telegraf,
     private readonly mcpClient: McpClientService,
-    private readonly openAiService: OpenAiService,
+    private readonly openAiService: TestOpenAiService,
   ) {}
 
   async onApplicationBootstrap() {

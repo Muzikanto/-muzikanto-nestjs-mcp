@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { OpenAiController } from './openai.controller';
-import { OpenAiService } from './openai.service';
+import { TestOpenAiService } from './openai.service';
 import { McpClientModule } from '@muzikanto/nestjs-mcp';
 
 @Global()
@@ -9,7 +9,7 @@ import { McpClientModule } from '@muzikanto/nestjs-mcp';
     McpClientModule.forRoot({ useValue: { url: 'http://127.0.0.1:3000/api' } }),
   ],
   controllers: [OpenAiController],
-  providers: [OpenAiService],
-  exports: [OpenAiService],
+  providers: [TestOpenAiService],
+  exports: [TestOpenAiService],
 })
-export class OpenAiModule {}
+export class TestOpenAiModule {}
